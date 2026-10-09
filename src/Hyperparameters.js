@@ -7,6 +7,7 @@ const Hyperparams = {
         this.killableNeighbors = Neighbors.adjacent;
         this.edibleNeighbors = Neighbors.adjacent;
         this.growableNeighbors = Neighbors.adjacent;
+        this.mateableNeighbors = Neighbors.adjacent;
 
         this.useGlobalMutability = false;
         this.globalMutability = 5;

@@ -51,6 +51,11 @@ class Armor extends CellState {
         super('armor');
     }
 }
+class Sex extends CellState {
+    constructor() {
+        super('sex');
+    }
+}
 class Eye extends CellState {
     constructor() {
         super('eye');
@@ -84,9 +89,10 @@ const CellStates = {
     killer: new Killer(),
     armor: new Armor(),
     eye: new Eye(),
+    sex: new Sex(),
     defineLists() {
-        this.all = [this.empty, this.food, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye]
-        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye];
+        this.all = [this.empty, this.food, this.wall, this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.sex]
+        this.living = [this.mouth, this.producer, this.mover, this.killer, this.armor, this.eye, this.sex];
     },
     getRandomName: function() {
         return this.all[Math.floor(Math.random() * this.all.length)].name;
