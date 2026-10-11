@@ -28,6 +28,7 @@ const Hyperparams = {
         this.foodDropProb = 0;
 
         this.extraMoverFoodCost = 0;
+        this.crossoverProb = 25; // chance a sexual child takes each of the partner's cell differences
         this.asexualCostMultiplier = 1; // asexual reproduction costs this many times foodNeeded(), mating does not
 
         this.maxOrganisms = -1;

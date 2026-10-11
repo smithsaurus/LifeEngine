@@ -164,29 +164,37 @@ class Organism {
         }
 
         var changed = false;
-        // 50/50 per cell: take the partner's cells that this parent lacks or has as a different type
+        // per cell: chance to take the partner's cells that this parent lacks or has as a different type
         for (var p_cell of partner.anatomy.cells) {
             var my_cell = this.anatomy.getLocalCell(p_cell.loc_col, p_cell.loc_row);
             if (my_cell != null && my_cell.state == p_cell.state)
                 continue;
-            if (Math.random() < 0.5) {
+            if (this.calcRandomChance(Hyperparams.crossoverProb)) {
                 if (my_cell != null)
                     org.anatomy.removeCell(p_cell.loc_col, p_cell.loc_row, true);
                 org.anatomy.addInheritCell(p_cell);
                 changed = true;
             }
         }
-        // 50/50 per cell: drop this parent's cells that the partner lacks
+        // per cell: chance to drop this parent's cells that the partner lacks
         for (var my_cell of this.anatomy.cells) {
             if (partner.anatomy.getLocalCell(my_cell.loc_col, my_cell.loc_row) != null)
                 continue;
-            if (Math.random() < 0.5 && org.anatomy.removeCell(my_cell.loc_col, my_cell.loc_row))
+            if (this.calcRandomChance(Hyperparams.crossoverProb) && org.anatomy.removeCell(my_cell.loc_col, my_cell.loc_row))
                 changed = true;
         }
 
         org.anatomy.checkTypeChange();
         org.sexual = true;
         org.parent_diff = diff;
+
+        // behaviour: each trait and each brain decision comes from a random parent
+        org.move_range = (Math.random() < 0.5 ? this : partner).move_range;
+        org.mutability = (Math.random() < 0.5 ? this : partner).mutability;
+        org.mate_tolerance = (Math.random() < 0.5 ? this : partner).mate_tolerance;
+        for (var dec in org.brain.decisions) {
+            org.brain.decisions[dec] = (Math.random() < 0.5 ? this : partner).brain.decisions[dec];
+        }
         org.mutateMateTolerance();
 
         // try every direction, starting from a random one, until the child fits
