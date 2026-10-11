@@ -54,6 +54,15 @@ class Armor extends CellState {
 class Sex extends CellState {
     constructor() {
         super('sex');
+        this.hole_color = 'black';
+    }
+    render(ctx, cell, size) {
+        ctx.fillStyle = this.color;
+        ctx.fillRect(cell.x, cell.y, size, size);
+        if(size == 1)
+            return;
+        ctx.fillStyle = this.hole_color;
+        ctx.fillRect(cell.x+size/4, cell.y+size/4, size/2, size/2);
     }
 }
 class Eye extends CellState {

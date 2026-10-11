@@ -79,6 +79,14 @@ const FossilRecord = {
         this.av_mut_rates = [];
         this.av_cells = [];
         this.av_cell_counts = [];
+        this.asexual_birth_counts = [];
+        this.sexual_birth_counts = [];
+        this.av_parent_diffs = [];
+        this.av_mate_tolerances = [];
+        // env birth totals as of the last data point
+        this.last_asexual_births = this.env.asexual_births;
+        this.last_sexual_births = this.env.sexual_births;
+        this.last_parent_diff = this.env.total_parent_diff;
         this.updateData();
     },
 
@@ -89,6 +97,8 @@ const FossilRecord = {
         this.species_counts.push(this.numExtantSpecies());
         this.av_mut_rates.push(this.env.averageMutability());
         this.calcCellCountAverages();
+        this.calcBirths();
+        this.av_mate_tolerances.push(this.env.averageMateTolerance());
         while (this.tick_record.length > this.record_size_limit) {
             this.tick_record.shift();
             this.pop_counts.shift();
@@ -96,7 +106,24 @@ const FossilRecord = {
             this.av_mut_rates.shift();
             this.av_cells.shift();
             this.av_cell_counts.shift();
+            this.asexual_birth_counts.shift();
+            this.sexual_birth_counts.shift();
+            this.av_parent_diffs.shift();
+            this.av_mate_tolerances.shift();
         }
+    },
+
+    // births since the last data point, and how different the parents of the sexual ones were
+    calcBirths() {
+        var asexual = this.env.asexual_births - this.last_asexual_births;
+        var sexual = this.env.sexual_births - this.last_sexual_births;
+        var diff = this.env.total_parent_diff - this.last_parent_diff;
+        this.asexual_birth_counts.push(asexual);
+        this.sexual_birth_counts.push(sexual);
+        this.av_parent_diffs.push(sexual > 0 ? diff / sexual : 0);
+        this.last_asexual_births = this.env.asexual_births;
+        this.last_sexual_births = this.env.sexual_births;
+        this.last_parent_diff = this.env.total_parent_diff;
     },
 
     calcCellCountAverages() {
@@ -159,6 +186,10 @@ const FossilRecord = {
             av_mut_rates:this.av_mut_rates,
             av_cells:this.av_cells,
             av_cell_counts:this.av_cell_counts,
+            asexual_birth_counts:this.asexual_birth_counts,
+            sexual_birth_counts:this.sexual_birth_counts,
+            av_parent_diffs:this.av_parent_diffs,
+            av_mate_tolerances:this.av_mate_tolerances,
         };
         let species = {};
         for (let s of Object.values(this.extant_species)) {
@@ -173,6 +204,11 @@ const FossilRecord = {
         SerializeHelper.overwriteNonObjects(record, this);
         for (let key in record.records) {
             this[key] = record.records[key];
+        }
+        // worlds saved before births were tracked have no birth records
+        for (let key of ['asexual_birth_counts', 'sexual_birth_counts', 'av_parent_diffs', 'av_mate_tolerances']) {
+            if (!record.records[key])
+                this[key] = this.tick_record.map(() => 0);
         }
     }
 

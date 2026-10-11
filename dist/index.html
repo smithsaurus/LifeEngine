@@ -61,6 +61,7 @@
 							<div class='cell-legend-type' id='killer' title="Killer: Harms organisms in adjacent cells."></div>
 							<div class='cell-legend-type' id='armor' title="Armor: Negates affects of killer cell."></div>
 							<div class='cell-legend-type' id='eye' title="Eye: Observes cells and decides movement."></div>
+							<div class='cell-legend-type' id='sex' title="Sex: Mates with organisms whose sex cells it touches."></div>
 							<div class='cell-legend-type' id='food' title="Food: Not part of an organism. Once an organism has eaten enough food, it will reproduce."></div>
 							<div class='cell-legend-type' id='wall' title="Wall: Not part of an organism. Blocks movement and reproduction."></div>
 						</div><br>
@@ -101,6 +102,9 @@
 								<div class='cell-type' id='armor' title="Armor: Negates affects of killer cell."></div>
 								<div class='cell-type' id='eye' title="Eye: Looks for cells to move away from or towards. Click again on a placed cell to rotate"></div>
 							</div>
+							<div style='grid-column: 3;'>
+								<div class='cell-type' id='sex' title="Sex: Mates with organisms whose sex cells it touches."></div>
+							</div>
 
 							<button id='clear-editor'>Clear</button>
 							<button class='randomize-button' id='generate-random' title="Randomizes organism"><i class="fa fa-random"></i></button>
@@ -115,6 +119,7 @@
 							<p class='cell-count'>Cell count: </p>
 							<p id='move-range'>Move Range: </p>
 							<p id='mutation-rate'>Mutation Rate: </p>
+							<p id='mate-tolerance' title='The most cell differences this organism accepts in a mate'>Mate Tolerance: </p>
 							<br>
 						
 							<div class='brain-details'>
@@ -139,6 +144,10 @@
 								<label for="mutation-rate-edit" title='Probability that offspring of this organism will mutate'>Mutation Rate:</label>
 								<input type="number" id="mutation-rate-edit" min="1" max="100" value=3 step="1">
 							</div>
+							<div id='mate-tolerance-cont'>
+								<label for="mate-tolerance-edit" title='The most cell differences this organism accepts in a mate. Both parents must accept each other.'>Mate Tolerance:</label>
+								<input type="number" id="mate-tolerance-edit" min="0" max="100" value=5 step="1">
+							</div>
 							<!-- <br> -->
 							<div class='brain-details'>
 								<h4>Brain</h4>
@@ -151,6 +160,7 @@
 									<option value="killer">killer</option>
 									<option value="armor">armor</option>
 									<option value="eye">eye</option>
+									<option value="sex">sex</option>
 								</select>
 
 								<label for="reaction-edit">Reaction: </label>
@@ -275,12 +285,16 @@
 						<p id='top-species'>Most Populous Species: </p>
 						<p id='largest-org'>Largest Organism Ever: </p>
 						<p id='avg-mut'>Average Mutation Rate: </p>
+						<p id='birth-counts'>Births: </p>
+						<p id='avg-mate-tolerance' title='Average of the most cell differences each living organism accepts in a mate'>Average Mate Tolerance: </p>
+						<p id='avg-parent-diff' title='Average number of cell positions where the two parents of a sexually produced organism differed'>Average Parent Difference: </p>
 						<label for="chart-option">Chart: </label>
 						<select name="chart-option" id="chart-option">
 							<option value="population">Population</option>
 							<option value="species">Species</option>
 							<option value="mut-rate">Organism Structure</option>
 							<option value="mut-rate">Mutation Rate</option>
+							<option value="births">Births</option>
 						</select>
 						<p id='chart-note'></p>
 					</div>

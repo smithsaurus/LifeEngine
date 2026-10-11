@@ -86,6 +86,9 @@ class EditorController extends CanvasController{
                 case "eye":
                     self.edit_cell_type = CellStates.eye;
                     break;
+                case "sex":
+                    self.edit_cell_type = CellStates.sex;
+                    break;
             }
             $(".cell-type" ).css( "border-color", "black" );
             var selected = '#'+this.id+'.cell-type';
@@ -112,6 +115,9 @@ class EditorController extends CanvasController{
 		
         $('#mutation-rate-edit').change ( function() {
             this.env.organism.mutability = parseInt($('#mutation-rate-edit').val());
+        }.bind(this));
+        $('#mate-tolerance-edit').change ( function() {
+            this.env.organism.mate_tolerance = parseInt($('#mate-tolerance-edit').val());
         }.bind(this));
         $('#observation-type-edit').change ( function() {
             this.setBrainEditorValues($('#observation-type-edit').val());
@@ -176,6 +182,7 @@ class EditorController extends CanvasController{
         this.updateDetails();
         $('#move-range').text("Move Range: "+org.move_range);
         $('#mutation-rate').text("Mutation Rate: "+org.mutability);
+        $('#mate-tolerance').text("Mate Tolerance: "+org.mate_tolerance);
        
 		if (Hyperparams.useGlobalMutability) {
             $('#mutation-rate').css('display', 'none');
@@ -204,6 +211,7 @@ class EditorController extends CanvasController{
         }
 
 		$('#mutation-rate-edit').val(org.mutability);
+        $('#mate-tolerance-edit').val(org.mate_tolerance);
         if (Hyperparams.useGlobalMutability) {
 			$('#mutation-rate-cont').css('display', 'none');
         }

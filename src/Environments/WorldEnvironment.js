@@ -25,6 +25,7 @@ class WorldEnvironment extends Environment{
         this.reset_count = 0;
         this.total_ticks = 0;
         this.data_update_rate = 100;
+        this.resetBirthCounts();
         FossilRecord.setEnv(this);
     }
 
@@ -44,6 +45,12 @@ class WorldEnvironment extends Environment{
         if (this.total_ticks % this.data_update_rate == 0) {
             FossilRecord.updateData();
         }
+    }
+
+    resetBirthCounts() {
+        this.asexual_births = 0;
+        this.sexual_births = 0;
+        this.total_parent_diff = 0; // summed over all sexual births
     }
 
     render() {
@@ -106,6 +113,15 @@ class WorldEnvironment extends Environment{
         return this.total_mutability / this.organisms.length;
     }
 
+    averageMateTolerance() {
+        if (this.organisms.length < 1)
+            return 0;
+        var total = 0;
+        for (var org of this.organisms)
+            total += org.mate_tolerance;
+        return total / this.organisms.length;
+    }
+
     changeCell(c, r, state, owner) {
         super.changeCell(c, r, state, owner);
         this.renderer.addToRender(this.grid_map.cellAt(c, r));
@@ -161,6 +177,7 @@ class WorldEnvironment extends Environment{
         this.renderer.renderFullGrid(this.grid_map.grid);
         this.total_mutability = 0;
         this.total_ticks = 0;
+        this.resetBirthCounts();
         FossilRecord.clear_record();
         if (reset_life)
             this.OriginOfLife();
@@ -196,6 +213,7 @@ class WorldEnvironment extends Environment{
 
     loadRaw(env) { // species name->stats map, evolution controls, 
         this.organisms = [];
+        this.resetBirthCounts();
         FossilRecord.clear_record();
         let cell_size = env.grid.cell_size ? env.grid.cell_size : this.grid_map.cell_size;
         this.resizeGridColRow(cell_size, env.grid.cols, env.grid.rows)

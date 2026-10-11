@@ -11,7 +11,8 @@ var color_scheme = {
     "armor":"#7230DB",
     "eye":"#B6C1EA",
     "eye-slit": "#0E1318",
-    "sex": "#007d51"
+    "sex": "#7affd0",
+    "sex-hole": "#ff0000"
 }
 
 // Renderer controls access to a canvas. There is one renderer for each canvas
@@ -26,6 +27,7 @@ class ColorScheme {
             state.color = color_scheme[state.name];
         }
         CellStates.eye.slit_color=color_scheme['eye-slit']
+        CellStates.sex.hole_color=color_scheme['sex-hole']
         for (var cell_type in color_scheme) {
             $('#'+cell_type+'.cell-type ').css('background-color', color_scheme[cell_type]);
             $('#'+cell_type+'.cell-legend-type').css('background-color', color_scheme[cell_type]);

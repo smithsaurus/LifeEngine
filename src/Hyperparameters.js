@@ -28,6 +28,7 @@ const Hyperparams = {
         this.foodDropProb = 0;
 
         this.extraMoverFoodCost = 0;
+        this.asexualCostMultiplier = 1; // asexual reproduction costs this many times foodNeeded(), mating does not
 
         this.maxOrganisms = -1;
     },

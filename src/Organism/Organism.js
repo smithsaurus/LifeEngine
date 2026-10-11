@@ -23,7 +23,10 @@ class Organism {
         this.move_range = 4;
         this.ignore_brain_for = 0;
         this.mutability = 5;
+        this.mate_tolerance = 5; // most cell differences it accepts in a mate
         this.damage = 0;
+        this.sexual = false; // born from a mating
+        this.parent_diff = 0; // number of cell positions where its two parents differed
         this.brain = new Brain(this);
         if (parent != null) {
             this.inherit(parent);
@@ -33,6 +36,7 @@ class Organism {
     inherit(parent) {
         this.move_range = parent.move_range;
         this.mutability = parent.mutability;
+        this.mate_tolerance = parent.mate_tolerance;
         this.species = parent.species;
         for (var c of parent.anatomy.cells){
             //deep copy parent cells
@@ -46,6 +50,11 @@ class Organism {
     // amount of food required before it can reproduce
     foodNeeded() {
         return this.anatomy.is_mover ? this.anatomy.cells.length + Hyperparams.extraMoverFoodCost : this.anatomy.cells.length;
+    }
+
+    // amount of food required before it can reproduce on its own
+    asexualFoodNeeded() {
+        return this.foodNeeded() * Hyperparams.asexualCostMultiplier;
     }
 
     lifespan() {
@@ -77,6 +86,7 @@ class Organism {
                     org.mutability = 1;
             }
         } 
+        org.mutateMateTolerance();
         var mutated = false;
         if (Math.random() * 100 <= prob) {
             if (org.anatomy.is_mover && Math.random() * 100 <= 10) { 
@@ -94,30 +104,127 @@ class Organism {
             }
         }
 
-        var direction = Directions.getRandomScalar();
+        this.placeChild(org, mutated);
+        Math.max(this.food_collected -= this.asexualFoodNeeded(), 0);
+    }
+
+    // tries to drop a child near this organism. new_species: the child's anatomy differs from this organism's
+    placeChild(org, new_species, direction=Directions.getRandomScalar()) {
         var direction_c = direction[0];
         var direction_r = direction[1];
         var offset = (Math.floor(Math.random() * 3));
-        var basemovement = this.anatomy.birth_distance;
+        var basemovement = Math.max(this.anatomy.birth_distance, org.anatomy.birth_distance);
         var new_c = this.c + (direction_c*basemovement) + (direction_c*offset);
         var new_r = this.r + (direction_r*basemovement) + (direction_r*offset);
 
-        if (org.isClear(new_c, new_r, org.rotation, true) && 
-            org.isStraightPath(new_c, new_r, this.c, this.r, this) && 
+        if (org.isClear(new_c, new_r, org.rotation, true) &&
+            org.isStraightPath(new_c, new_r, this.c, this.r, this) &&
             this.env.canAddOrganism())
         {
             org.c = new_c;
             org.r = new_r;
             this.env.addOrganism(org);
             org.updateGrid();
-            if (mutated) {
+            if (new_species) {
                 FossilRecord.addSpecies(org, this.species);
             }
             else {
                 org.species.addPop();
             }
+            if (org.sexual) {
+                this.env.sexual_births++;
+                this.env.total_parent_diff += org.parent_diff;
+            }
+            else {
+                this.env.asexual_births++;
+            }
+            return true;
         }
-        Math.max(this.food_collected -= this.foodNeeded(), 0);
+        return false;
+    }
+
+    // sexual reproduction, triggered when one of this organism's sex cells touches one of partner's.
+    // returns true if a mating happened (food was spent), even if the child had no room to spawn
+    mate(partner) {
+        // cheaper than asexual: the two parents only need the asexual cost between them
+        var cost = this.foodNeeded();
+        if (this.food_collected + partner.food_collected <= cost)
+            return false;
+
+        // both parents must tolerate how different the other's body is
+        var diff = this.anatomyDiff(partner);
+        if (diff > this.mate_tolerance || diff > partner.mate_tolerance)
+            return false;
+
+        // child starts as a copy of this parent (the one whose sex cell initiated).
+        // identical parents have nothing to cross over, so their child is a plain copy
+        var org = new Organism(0, 0, this.env, this);
+        if(Hyperparams.rotationEnabled){
+            org.rotation = Directions.getRandomDirection();
+        }
+
+        var changed = false;
+        // 50/50 per cell: take the partner's cells that this parent lacks or has as a different type
+        for (var p_cell of partner.anatomy.cells) {
+            var my_cell = this.anatomy.getLocalCell(p_cell.loc_col, p_cell.loc_row);
+            if (my_cell != null && my_cell.state == p_cell.state)
+                continue;
+            if (Math.random() < 0.5) {
+                if (my_cell != null)
+                    org.anatomy.removeCell(p_cell.loc_col, p_cell.loc_row, true);
+                org.anatomy.addInheritCell(p_cell);
+                changed = true;
+            }
+        }
+        // 50/50 per cell: drop this parent's cells that the partner lacks
+        for (var my_cell of this.anatomy.cells) {
+            if (partner.anatomy.getLocalCell(my_cell.loc_col, my_cell.loc_row) != null)
+                continue;
+            if (Math.random() < 0.5 && org.anatomy.removeCell(my_cell.loc_col, my_cell.loc_row))
+                changed = true;
+        }
+
+        org.anatomy.checkTypeChange();
+        org.sexual = true;
+        org.parent_diff = diff;
+        org.mutateMateTolerance();
+
+        // try every direction, starting from a random one, until the child fits
+        var start = Directions.getRandomDirection();
+        for (var i=0; i<4; i++) {
+            if (this.placeChild(org, changed, Directions.scalars[(start+i) % 4]))
+                break;
+        }
+
+        // this parent pays what it can, the partner covers the rest
+        var paid = Math.min(this.food_collected, cost);
+        this.food_collected -= paid;
+        partner.food_collected -= cost - paid;
+        return true;
+    }
+
+
+    // number of cell positions where this organism's body differs from partner's
+    anatomyDiff(partner) {
+        var diff = 0;
+        for (var p_cell of partner.anatomy.cells) {
+            var my_cell = this.anatomy.getLocalCell(p_cell.loc_col, p_cell.loc_row);
+            if (my_cell == null || my_cell.state != p_cell.state)
+                diff++;
+        }
+        for (var my_cell of this.anatomy.cells) {
+            if (partner.anatomy.getLocalCell(my_cell.loc_col, my_cell.loc_row) == null)
+                diff++;
+        }
+        return diff;
+    }
+
+    // drifts by one each birth, like mutability
+    mutateMateTolerance() {
+        if (Math.random() <= 0.5)
+            this.mate_tolerance++;
+        else if (this.mate_tolerance > 0)
+            this.mate_tolerance--;
     }
 
     mutate() {
@@ -282,7 +389,7 @@ class Organism {
             this.die();
             return this.living;
         }
-        if (this.food_collected >= this.foodNeeded()) {
+        if (this.food_collected >= this.asexualFoodNeeded()) {
             this.reproduce();
         }
         for (var cell of this.anatomy.cells) {
