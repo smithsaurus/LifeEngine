@@ -183,6 +183,7 @@ class EditorController extends CanvasController{
         $('#move-range').text("Move Range: "+org.move_range);
         $('#mutation-rate').text("Mutation Rate: "+org.mutability);
         $('#mate-tolerance').text("Mate Tolerance: "+org.mate_tolerance);
+        $('#mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
        
 		if (Hyperparams.useGlobalMutability) {
             $('#mutation-rate').css('display', 'none');
@@ -212,6 +213,7 @@ class EditorController extends CanvasController{
 
 		$('#mutation-rate-edit').val(org.mutability);
         $('#mate-tolerance-edit').val(org.mate_tolerance);
+        $('#mate-tolerance-cont').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
         if (Hyperparams.useGlobalMutability) {
 			$('#mutation-rate-cont').css('display', 'none');
         }

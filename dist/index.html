@@ -244,6 +244,12 @@
 						<br>
 						<label for="extra-mover-cost" title='Additional food cost for movers to reproduce'>Extra mover reproduction cost:</label>
 						<input type="number" id="extra-mover-cost" value=0 max="1000" step="1">
+						<br>
+						<label for="asexual-cost" title='Asexual reproduction costs this many times the normal food requirement (one food per cell)'>Asexual cost multiplier:</label>
+						<input type="number" id="asexual-cost" value=1 min="0.1" max="100" step="0.1">
+						<br>
+						<label for="sexual-cost" title='Mating costs this many times the normal food requirement (one food per cell), shared between the two parents'>Sexual cost multiplier:</label>
+						<input type="number" id="sexual-cost" value=1 min="0.1" max="100" step="0.1">
 
 						
 					</div>
@@ -256,6 +262,12 @@
 						<div class="global-mutation-container">
 							<label class="global-mutation-in" for="global-mutation">Global mutation rate: </label>
 							<input class="global-mutation-in" type="number" id="global-mutation" min="0" max="100" value=5 step="1">
+						</div>
+						<label for="evolved-mate-tolerance" title='When on, each organism has its own mate tolerance that can increase or decrease, and refuses mates whose bodies differ by more cells than that. When off, all organisms have the same mate tolerance.'>Use evolved mate tolerance</label>
+						<input type="checkbox" id="evolved-mate-tolerance">
+						<div class="global-mate-tolerance-container">
+							<label for="global-mate-tolerance" title='The most cell differences any organism accepts in a mate. -1 means no limit: any partner works.'>Global mate tolerance: </label>
+							<input type="number" id="global-mate-tolerance" min="-1" max="100" value=-1 step="1">
 						</div>
 						<h4 title='When an organism mutates, it can choose from one of the following mutation types.'>Mutation Type Probabilities</h4>
 						<label for="add-prob" title='A new cell will stem from an existing one'>Add Cell:</label>
@@ -286,7 +298,7 @@
 						<p id='largest-org'>Largest Organism Ever: </p>
 						<p id='avg-mut'>Average Mutation Rate: </p>
 						<p id='birth-counts'>Births: </p>
-						<p id='avg-mate-tolerance' title='Average of the most cell differences each living organism accepts in a mate'>Average Mate Tolerance: </p>
+						<p id='avg-mate-tolerance' title='Average of the most cell differences accepted in a mate, over living organisms that have a sex cell'>Average Mate Tolerance: </p>
 						<p id='avg-parent-diff' title='Average number of cell positions where the two parents of a sexually produced organism differed'>Average Parent Difference: </p>
 						<label for="chart-option">Chart: </label>
 						<select name="chart-option" id="chart-option">

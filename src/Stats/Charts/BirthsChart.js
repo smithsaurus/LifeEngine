@@ -5,7 +5,7 @@ class BirthsChart extends ChartController {
     constructor() {
         super("Births",
             "Births since last data point",
-            "Parent difference: the number of cell positions where the two parents of a sexually produced organism differed (0 means identical parents). Mate tolerance: the most cell differences an organism accepts in a mate, averaged over all living organisms.");
+            "Parent difference: the number of cell positions where the two parents of a sexually produced organism differed (0 means identical parents). Mate tolerance: the most cell differences an organism accepts in a mate, averaged over living organisms that have a sex cell.");
         this.chart.options.axisY2 = {
             title: "Cells",
             minimum: 0,

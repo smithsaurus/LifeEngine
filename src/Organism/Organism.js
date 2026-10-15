@@ -146,15 +146,20 @@ class Organism {
     // sexual reproduction, triggered when one of this organism's sex cells touches one of partner's.
     // returns true if a mating happened (food was spent), even if the child had no room to spawn
     mate(partner) {
-        // cheaper than asexual: the two parents only need the asexual cost between them
-        var cost = this.foodNeeded();
+        // the two parents only need the cost between them
+        var cost = this.foodNeeded() * Hyperparams.sexualCostMultiplier;
         if (this.food_collected + partner.food_collected <= cost)
             return false;
 
         // both parents must tolerate how different the other's body is
         var diff = this.anatomyDiff(partner);
-        if (diff > this.mate_tolerance || diff > partner.mate_tolerance)
+        if (Hyperparams.useGlobalMateTolerance) {
+            if (Hyperparams.globalMateTolerance >= 0 && diff > Hyperparams.globalMateTolerance)
+                return false;
+        }
+        else if (diff > this.mate_tolerance || diff > partner.mate_tolerance) {
             return false;
+        }
 
         // child starts as a copy of this parent (the one whose sex cell initiated).
         // identical parents have nothing to cross over, so their child is a plain copy
@@ -229,6 +234,8 @@ class Organism {
 
     // drifts by one each birth, like mutability
     mutateMateTolerance() {
+        if (Hyperparams.useGlobalMateTolerance)
+            return;
         if (Math.random() <= 0.5)
             this.mate_tolerance++;
         else if (this.mate_tolerance > 0)

@@ -113,13 +113,22 @@ class WorldEnvironment extends Environment{
         return this.total_mutability / this.organisms.length;
     }
 
+    // averaged over organisms with a sex cell only, since tolerance never affects the others
     averageMateTolerance() {
-        if (this.organisms.length < 1)
-            return 0;
+        if (Hyperparams.useGlobalMateTolerance) {
+            return Hyperparams.globalMateTolerance;
+        }
         var total = 0;
-        for (var org of this.organisms)
+        var count = 0;
+        for (var org of this.organisms) {
+            if (!org.living || !org.anatomy.has_sex)
+                continue;
             total += org.mate_tolerance;
-        return total / this.organisms.length;
+            count++;
+        }
+        if (count < 1)
+            return 0;
+        return total / count;
     }
 
     changeCell(c, r, state, owner) {
