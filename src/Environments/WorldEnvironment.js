@@ -131,6 +131,21 @@ class WorldEnvironment extends Environment{
         return total / count;
     }
 
+    // averaged over organisms with a sex cell only, since the split never affects the others
+    averageCrossoverSplit() {
+        var total = 0;
+        var count = 0;
+        for (var org of this.organisms) {
+            if (!org.living || !org.anatomy.has_sex)
+                continue;
+            total += org.crossover_split;
+            count++;
+        }
+        if (count < 1)
+            return 0;
+        return total / count;
+    }
+
     changeCell(c, r, state, owner) {
         super.changeCell(c, r, state, owner);
         this.renderer.addToRender(this.grid_map.cellAt(c, r));

@@ -119,6 +119,9 @@ class EditorController extends CanvasController{
         $('#mate-tolerance-edit').change ( function() {
             this.env.organism.mate_tolerance = parseInt($('#mate-tolerance-edit').val());
         }.bind(this));
+        $('#crossover-split-edit').change ( function() {
+            this.env.organism.crossover_split = parseInt($('#crossover-split-edit').val());
+        }.bind(this));
         $('#observation-type-edit').change ( function() {
             this.setBrainEditorValues($('#observation-type-edit').val());
             this.setBrainDetails();
@@ -183,6 +186,7 @@ class EditorController extends CanvasController{
         $('#move-range').text("Move Range: "+org.move_range);
         $('#mutation-rate').text("Mutation Rate: "+org.mutability);
         $('#mate-tolerance').text("Mate Tolerance: "+org.mate_tolerance);
+        $('#crossover-split').text("Crossover Split: "+org.crossover_split+"%");
         $('#mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
        
 		if (Hyperparams.useGlobalMutability) {
@@ -213,6 +217,7 @@ class EditorController extends CanvasController{
 
 		$('#mutation-rate-edit').val(org.mutability);
         $('#mate-tolerance-edit').val(org.mate_tolerance);
+        $('#crossover-split-edit').val(org.crossover_split);
         $('#mate-tolerance-cont').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
         if (Hyperparams.useGlobalMutability) {
 			$('#mutation-rate-cont').css('display', 'none');

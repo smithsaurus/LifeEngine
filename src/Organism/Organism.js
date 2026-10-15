@@ -7,6 +7,9 @@ const Brain = require("./Perception/Brain");
 const FossilRecord = require("../Stats/FossilRecord");
 const SerializeHelper = require("../Utils/SerializeHelper");
 
+// directions the crossover line can be ordered along: horizontal, vertical and both diagonals, from either side
+const SplitDirections = [[1,0],[-1,0],[0,1],[0,-1],[1,1],[-1,-1],[1,-1],[-1,1]];
+
 class Organism {
     constructor(col, row, env, parent=null) {
         this.c = col;
@@ -24,6 +27,7 @@ class Organism {
         this.ignore_brain_for = 0;
         this.mutability = 5;
         this.mate_tolerance = 5; // most cell differences it accepts in a mate
+        this.crossover_split = 50; // percent of a sexual child's body taken from this organism when it initiates
         this.damage = 0;
         this.sexual = false; // born from a mating
         this.parent_diff = 0; // number of cell positions where its two parents differed
@@ -37,6 +41,7 @@ class Organism {
         this.move_range = parent.move_range;
         this.mutability = parent.mutability;
         this.mate_tolerance = parent.mate_tolerance;
+        this.crossover_split = parent.crossover_split;
         this.species = parent.species;
         for (var c of parent.anatomy.cells){
             //deep copy parent cells
@@ -87,6 +92,7 @@ class Organism {
             }
         } 
         org.mutateMateTolerance();
+        org.mutateCrossoverSplit();
         var mutated = false;
         if (Math.random() * 100 <= prob) {
             if (org.anatomy.is_mover && Math.random() * 100 <= 10) { 
@@ -168,26 +174,31 @@ class Organism {
             org.rotation = Directions.getRandomDirection();
         }
 
-        var changed = false;
-        // per cell: chance to take the partner's cells that this parent lacks or has as a different type
-        for (var p_cell of partner.anatomy.cells) {
-            var my_cell = this.anatomy.getLocalCell(p_cell.loc_col, p_cell.loc_row);
-            if (my_cell != null && my_cell.state == p_cell.state)
-                continue;
-            if (this.calcRandomChance(Hyperparams.crossoverProb)) {
-                if (my_cell != null)
-                    org.anatomy.removeCell(p_cell.loc_col, p_cell.loc_row, true);
-                org.anatomy.addInheritCell(p_cell);
-                changed = true;
-            }
+        // split crossover: a straight line cuts across both bodies, and the child takes this parent's cells
+        // on one side and the partner's on the other. crossover_split sets where the line falls:
+        // the percent of cell positions that come from this parent (50 cuts through the middle)
+        var positions = [];
+        for (var cell of this.anatomy.cells.concat(partner.anatomy.cells)) {
+            if (!positions.some(p => p[0] == cell.loc_col && p[1] == cell.loc_row))
+                positions.push([cell.loc_col, cell.loc_row]);
         }
-        // per cell: chance to drop this parent's cells that the partner lacks
-        for (var my_cell of this.anatomy.cells) {
-            if (partner.anatomy.getLocalCell(my_cell.loc_col, my_cell.loc_row) != null)
-                continue;
-            if (this.calcRandomChance(Hyperparams.crossoverProb) && org.anatomy.removeCell(my_cell.loc_col, my_cell.loc_row))
-                changed = true;
+        var dir = SplitDirections[Math.floor(Math.random() * SplitDirections.length)];
+        positions.sort((a, b) => (a[0]*dir[0] + a[1]*dir[1]) - (b[0]*dir[0] + b[1]*dir[1]));
+        var from_this = Math.round(positions.length * this.crossover_split / 100);
+        org.anatomy.clear();
+        for (var i=0; i<positions.length; i++) {
+            var source = i < from_this ? this : partner;
+            var cell = source.anatomy.getLocalCell(positions[i][0], positions[i][1]);
+            if (cell != null)
+                org.anatomy.addInheritCell(cell);
         }
+        // every organism needs a centre cell
+        if (org.anatomy.getLocalCell(0, 0) == null) {
+            var centre = this.anatomy.getLocalCell(0, 0) || partner.anatomy.getLocalCell(0, 0);
+            if (centre != null)
+                org.anatomy.addInheritCell(centre);
+        }
+        var changed = org.anatomyDiff(this) > 0;
 
         org.anatomy.checkTypeChange();
         org.sexual = true;
@@ -197,10 +208,12 @@ class Organism {
         org.move_range = (Math.random() < 0.5 ? this : partner).move_range;
         org.mutability = (Math.random() < 0.5 ? this : partner).mutability;
         org.mate_tolerance = (Math.random() < 0.5 ? this : partner).mate_tolerance;
+        org.crossover_split = (Math.random() < 0.5 ? this : partner).crossover_split;
         for (var dec in org.brain.decisions) {
             org.brain.decisions[dec] = (Math.random() < 0.5 ? this : partner).brain.decisions[dec];
         }
         org.mutateMateTolerance();
+        org.mutateCrossoverSplit();
 
         // try every direction, starting from a random one, until the child fits
         var start = Directions.getRandomDirection();
@@ -240,6 +253,14 @@ class Organism {
             this.mate_tolerance++;
         else if (this.mate_tolerance > 0)
             this.mate_tolerance--;
+    }
+
+    // drifts by 5 percentage points each birth, staying within 0-100
+    mutateCrossoverSplit() {
+        if (Math.random() <= 0.5)
+            this.crossover_split = Math.min(this.crossover_split + 5, 100);
+        else
+            this.crossover_split = Math.max(this.crossover_split - 5, 0);
     }
 
     mutate() {

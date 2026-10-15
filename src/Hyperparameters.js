@@ -31,7 +31,6 @@ const Hyperparams = {
        
         this.useGlobalMateTolerance = true; //the most cell differences accepted in a mate
         this.globalMateTolerance = -1; //(-1 means any partner works)
-        this.crossoverProb = 25; // chance a sexual child takes each of the partner's cell differences
         // reproduction costs this many times foodNeeded()
         this.asexualCostMultiplier = 1;
         this.sexualCostMultiplier = 1;

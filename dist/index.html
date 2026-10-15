@@ -120,6 +120,7 @@
 							<p id='move-range'>Move Range: </p>
 							<p id='mutation-rate'>Mutation Rate: </p>
 							<p id='mate-tolerance' title='The most cell differences this organism accepts in a mate'>Mate Tolerance: </p>
+							<p id='crossover-split' title='When this organism starts a mating, the percent of the child&apos;s body taken from it rather than its partner'>Crossover Split: </p>
 							<br>
 						
 							<div class='brain-details'>
@@ -147,6 +148,10 @@
 							<div id='mate-tolerance-cont'>
 								<label for="mate-tolerance-edit" title='The most cell differences this organism accepts in a mate. Both parents must accept each other.'>Mate Tolerance:</label>
 								<input type="number" id="mate-tolerance-edit" min="0" max="100" value=5 step="1">
+							</div>
+							<div id='crossover-split-cont'>
+								<label for="crossover-split-edit" title='When this organism starts a mating, the percent of the child&apos;s body taken from it rather than its partner'>Crossover Split (%):</label>
+								<input type="number" id="crossover-split-edit" min="0" max="100" value=50 step="5">
 							</div>
 							<!-- <br> -->
 							<div class='brain-details'>
@@ -299,6 +304,7 @@
 						<p id='avg-mut'>Average Mutation Rate: </p>
 						<p id='birth-counts'>Births: </p>
 						<p id='avg-mate-tolerance' title='Average of the most cell differences accepted in a mate, over living organisms that have a sex cell'>Average Mate Tolerance: </p>
+						<p id='avg-crossover-split' title='Average percent of a sexual child&apos;s body taken from the parent that starts the mating, over living organisms that have a sex cell'>Average Crossover Split: </p>
 						<p id='avg-parent-diff' title='Average number of cell positions where the two parents of a sexually produced organism differed'>Average Parent Difference: </p>
 						<label for="chart-option">Chart: </label>
 						<select name="chart-option" id="chart-option">
