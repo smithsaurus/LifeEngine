@@ -31,6 +31,9 @@ const Hyperparams = {
        
         this.useGlobalMateTolerance = true; //the most cell differences accepted in a mate
         this.globalMateTolerance = -1; //(-1 means any partner works)
+        this.useGlobalCrossoverSplit = true; // when on, every mating uses globalCrossoverSplit
+        this.globalCrossoverSplit = 50; // percent of a sexual child's body taken from the parent that starts the mating
+        this.geneticLoadPenalty = 5; // percent of lifespan lost per point of genetic load (0 turns genetic load off)
         // reproduction costs this many times foodNeeded()
         this.asexualCostMultiplier = 1;
         this.sexualCostMultiplier = 1;

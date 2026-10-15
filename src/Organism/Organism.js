@@ -28,6 +28,7 @@ class Organism {
         this.mutability = 5;
         this.mate_tolerance = 5; // most cell differences it accepts in a mate
         this.crossover_split = 50; // percent of a sexual child's body taken from this organism when it initiates
+        this.genetic_load = 0; // rises with clonal and inbred births, falls with outcrossing; shortens lifespan
         this.damage = 0;
         this.sexual = false; // born from a mating
         this.parent_diff = 0; // number of cell positions where its two parents differed
@@ -42,6 +43,7 @@ class Organism {
         this.mutability = parent.mutability;
         this.mate_tolerance = parent.mate_tolerance;
         this.crossover_split = parent.crossover_split;
+        this.genetic_load = parent.genetic_load;
         this.species = parent.species;
         for (var c of parent.anatomy.cells){
             //deep copy parent cells
@@ -63,7 +65,9 @@ class Organism {
     }
 
     lifespan() {
-        return this.anatomy.cells.length * Hyperparams.lifespanMultiplier;
+        // genetic load shortens life: each point costs geneticLoadPenalty percent, with diminishing effect
+        var load_factor = 1 + this.genetic_load * Hyperparams.geneticLoadPenalty / 100;
+        return this.anatomy.cells.length * Hyperparams.lifespanMultiplier / load_factor;
     }
 
     maxHealth() {
@@ -93,6 +97,7 @@ class Organism {
         } 
         org.mutateMateTolerance();
         org.mutateCrossoverSplit();
+        org.genetic_load++; // a clone carries one more point of load
         var mutated = false;
         if (Math.random() * 100 <= prob) {
             if (org.anatomy.is_mover && Math.random() * 100 <= 10) { 
@@ -184,7 +189,8 @@ class Organism {
         }
         var dir = SplitDirections[Math.floor(Math.random() * SplitDirections.length)];
         positions.sort((a, b) => (a[0]*dir[0] + a[1]*dir[1]) - (b[0]*dir[0] + b[1]*dir[1]));
-        var from_this = Math.round(positions.length * this.crossover_split / 100);
+        var split = Hyperparams.useGlobalCrossoverSplit ? Hyperparams.globalCrossoverSplit : this.crossover_split;
+        var from_this = Math.round(positions.length * split / 100);
         org.anatomy.clear();
         for (var i=0; i<positions.length; i++) {
             var source = i < from_this ? this : partner;
@@ -203,6 +209,11 @@ class Organism {
         org.anatomy.checkTypeChange();
         org.sexual = true;
         org.parent_diff = diff;
+
+        // identical parents add a point of load like cloning does; different parents remove
+        // one point for every cell position they differ by
+        var parent_load = Math.round((this.genetic_load + partner.genetic_load) / 2);
+        org.genetic_load = diff == 0 ? parent_load + 1 : Math.max(parent_load - diff, 0);
 
         // behaviour: each trait and each brain decision comes from a random parent
         org.move_range = (Math.random() < 0.5 ? this : partner).move_range;
@@ -257,6 +268,8 @@ class Organism {
 
     // drifts by 5 percentage points each birth, staying within 0-100
     mutateCrossoverSplit() {
+        if (Hyperparams.useGlobalCrossoverSplit)
+            return;
         if (Math.random() <= 0.5)
             this.crossover_split = Math.min(this.crossover_split + 5, 100);
         else

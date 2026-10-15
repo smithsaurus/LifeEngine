@@ -187,6 +187,8 @@ class EditorController extends CanvasController{
         $('#mutation-rate').text("Mutation Rate: "+org.mutability);
         $('#mate-tolerance').text("Mate Tolerance: "+org.mate_tolerance);
         $('#crossover-split').text("Crossover Split: "+org.crossover_split+"%");
+        $('#crossover-split').css('display', Hyperparams.useGlobalCrossoverSplit ? 'none' : 'block');
+        $('#genetic-load').text("Genetic Load: "+org.genetic_load);
         $('#mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
        
 		if (Hyperparams.useGlobalMutability) {
@@ -218,6 +220,7 @@ class EditorController extends CanvasController{
 		$('#mutation-rate-edit').val(org.mutability);
         $('#mate-tolerance-edit').val(org.mate_tolerance);
         $('#crossover-split-edit').val(org.crossover_split);
+        $('#crossover-split-cont').css('display', Hyperparams.useGlobalCrossoverSplit ? 'none' : 'block');
         $('#mate-tolerance-cont').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
         if (Hyperparams.useGlobalMutability) {
 			$('#mutation-rate-cont').css('display', 'none');

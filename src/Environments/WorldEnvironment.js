@@ -133,12 +133,29 @@ class WorldEnvironment extends Environment{
 
     // averaged over organisms with a sex cell only, since the split never affects the others
     averageCrossoverSplit() {
+        if (Hyperparams.useGlobalCrossoverSplit) {
+            return Hyperparams.globalCrossoverSplit;
+        }
         var total = 0;
         var count = 0;
         for (var org of this.organisms) {
             if (!org.living || !org.anatomy.has_sex)
                 continue;
             total += org.crossover_split;
+            count++;
+        }
+        if (count < 1)
+            return 0;
+        return total / count;
+    }
+
+    averageGeneticLoad() {
+        var total = 0;
+        var count = 0;
+        for (var org of this.organisms) {
+            if (!org.living)
+                continue;
+            total += org.genetic_load;
             count++;
         }
         if (count < 1)

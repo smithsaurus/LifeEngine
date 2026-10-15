@@ -321,6 +321,24 @@ class ControlPanel {
             }
             Hyperparams.useGlobalMateTolerance = !this.checked;
         });
+        $('#evolved-crossover-split').change( function() {
+            if (this.checked) {
+                $('.global-crossover-split-container').css('display', 'none');
+                $('#avg-crossover-split').css('display', 'block');
+            }
+            else {
+                $('.global-crossover-split-container').css('display', 'block');
+                $('#avg-crossover-split').css('display', 'none');
+            }
+            Hyperparams.useGlobalCrossoverSplit = !this.checked;
+        });
+        $('#global-crossover-split').change( function() {
+            var split = parseInt($('#global-crossover-split').val());
+            Hyperparams.globalCrossoverSplit = isNaN(split) ? 50 : Math.min(Math.max(split, 0), 100);
+        });
+        $('#genetic-load-penalty').change( function() {
+            Hyperparams.geneticLoadPenalty = Math.max(parseFloat($('#genetic-load-penalty').val()) || 0, 0);
+        });
         $('#global-mate-tolerance').change( function() {
             Hyperparams.globalMateTolerance = parseInt($('#global-mate-tolerance').val());
         });
@@ -391,6 +409,11 @@ class ControlPanel {
         $('#global-mate-tolerance').val(Hyperparams.globalMateTolerance);
         $('.global-mate-tolerance-container').css('display', Hyperparams.useGlobalMateTolerance ? 'block' : 'none');
         $('#avg-mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
+        $('#evolved-crossover-split').prop('checked', !Hyperparams.useGlobalCrossoverSplit);
+        $('#global-crossover-split').val(Hyperparams.globalCrossoverSplit);
+        $('.global-crossover-split-container').css('display', Hyperparams.useGlobalCrossoverSplit ? 'block' : 'none');
+        $('#avg-crossover-split').css('display', Hyperparams.useGlobalCrossoverSplit ? 'none' : 'block');
+        $('#genetic-load-penalty').val(Hyperparams.geneticLoadPenalty);
         $('#evolved-mutation').prop('checked', !Hyperparams.useGlobalMutability);
         $('#add-prob').val(Hyperparams.addProb);
         $('#change-prob').val(Hyperparams.changeProb);

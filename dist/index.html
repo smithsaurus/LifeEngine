@@ -119,6 +119,7 @@
 							<p class='cell-count'>Cell count: </p>
 							<p id='move-range'>Move Range: </p>
 							<p id='mutation-rate'>Mutation Rate: </p>
+							<p id='genetic-load' title='Rises with clonal and inbred births, falls with outcrossing. Shortens lifespan.'>Genetic Load: </p>
 							<p id='mate-tolerance' title='The most cell differences this organism accepts in a mate'>Mate Tolerance: </p>
 							<p id='crossover-split' title='When this organism starts a mating, the percent of the child&apos;s body taken from it rather than its partner'>Crossover Split: </p>
 							<br>
@@ -255,6 +256,9 @@
 						<br>
 						<label for="sexual-cost" title='Mating costs this many times the normal food requirement (one food per cell), shared between the two parents'>Sexual cost multiplier:</label>
 						<input type="number" id="sexual-cost" value=1 min="0.1" max="100" step="0.1">
+						<br>
+						<label for="genetic-load-penalty" title='Each clonal or inbred birth adds a point of genetic load; mating with a different partner removes one point per differing cell. Each point shortens lifespan by this percent, with diminishing effect. 0 turns genetic load off.'>Genetic load penalty (%):</label>
+						<input type="number" id="genetic-load-penalty" value=5 min="0" max="100" step="1">
 
 						
 					</div>
@@ -273,6 +277,12 @@
 						<div class="global-mate-tolerance-container">
 							<label for="global-mate-tolerance" title='The most cell differences any organism accepts in a mate. -1 means no limit: any partner works.'>Global mate tolerance: </label>
 							<input type="number" id="global-mate-tolerance" min="-1" max="100" value=-1 step="1">
+						</div>
+						<label for="evolved-crossover-split" title='When on, each organism has its own crossover split that can increase or decrease. When off, every mating uses the same split.'>Use evolved crossover split</label>
+						<input type="checkbox" id="evolved-crossover-split">
+						<div class="global-crossover-split-container">
+							<label for="global-crossover-split" title='Percent of a sexual child&apos;s body taken from the parent that starts the mating. 50 cuts both bodies through the middle.'>Global crossover split (%): </label>
+							<input type="number" id="global-crossover-split" min="0" max="100" value=50 step="5">
 						</div>
 						<h4 title='When an organism mutates, it can choose from one of the following mutation types.'>Mutation Type Probabilities</h4>
 						<label for="add-prob" title='A new cell will stem from an existing one'>Add Cell:</label>
@@ -305,6 +315,7 @@
 						<p id='birth-counts'>Births: </p>
 						<p id='avg-mate-tolerance' title='Average of the most cell differences accepted in a mate, over living organisms that have a sex cell'>Average Mate Tolerance: </p>
 						<p id='avg-crossover-split' title='Average percent of a sexual child&apos;s body taken from the parent that starts the mating, over living organisms that have a sex cell'>Average Crossover Split: </p>
+						<p id='avg-genetic-load' title='Average genetic load over all living organisms. Rises with clonal and inbred births, falls with outcrossing.'>Average Genetic Load: </p>
 						<p id='avg-parent-diff' title='Average number of cell positions where the two parents of a sexually produced organism differed'>Average Parent Difference: </p>
 						<label for="chart-option">Chart: </label>
 						<select name="chart-option" id="chart-option">

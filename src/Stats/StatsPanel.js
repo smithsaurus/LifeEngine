@@ -64,6 +64,7 @@ class StatsPanel {
         $('#birth-counts').text("Births: " + this.env.asexual_births + " asexual, " + sexual + " sexual (" + (births > 0 ? Math.round(sexual / births * 100) : 0) + "% sexual)");
         $('#avg-mate-tolerance').text("Average Mate Tolerance: " + Math.round(this.env.averageMateTolerance() * 100) / 100 + " cells");
         $('#avg-crossover-split').text("Average Crossover Split: " + Math.round(this.env.averageCrossoverSplit() * 100) / 100 + "% from initiator");
+        $('#avg-genetic-load').text("Average Genetic Load: " + Math.round(this.env.averageGeneticLoad() * 100) / 100);
         $('#avg-parent-diff').text("Average Parent Difference: " + (sexual > 0 ? Math.round(this.env.total_parent_diff / sexual * 100) / 100 : 0) + " cells");
     }
 
