@@ -1,71 +1,71 @@
-const FossilRecord = require("../FossilRecord");
-const ChartController = require("./ChartController");
+const FossilRecord = require("../FossilRecord"); //claude ai
+const ChartController = require("./ChartController"); //claude ai
 
-class BirthsChart extends ChartController {
-    constructor() {
-        super("Births",
-            "Births since last data point",
-            "Parent difference: the number of cell positions where the two parents of a sexually produced organism differed (0 means identical parents). Mate tolerance: the most cell differences an organism accepts in a mate, averaged over living organisms that have a sex cell.");
-        this.chart.options.axisY2 = {
-            title: "Cells",
-            minimum: 0,
-        };
-    }
+class BirthsChart extends ChartController { //claude ai
+    constructor() { //claude ai
+        super("Births", //claude ai
+            "Births since last data point", //claude ai
+            "Parent difference: the number of cell positions where the two parents of a sexually produced organism differed (0 means identical parents). Mate tolerance: the most cell differences an organism accepts in a mate, averaged over living organisms that have a sex cell."); //claude ai
+        this.chart.options.axisY2 = { //claude ai
+            title: "Cells", //claude ai
+            minimum: 0, //claude ai
+        }; //claude ai
+    } //claude ai
 
-    setData() {
-        this.clear();
-        this.data.push({
-                type: "line",
-                markerType: "none",
-                color: 'black',
-                showInLegend: true,
-                name: "asexual",
-                legendText: "Asexual births",
-                dataPoints: []
-            }
-        );
-        this.data.push({
-                type: "line",
-                markerType: "none",
-                color: 'green',
-                showInLegend: true,
-                name: "sexual",
-                legendText: "Sexual births",
-                dataPoints: []
-            }
-        );
-        this.data.push({
-                type: "line",
-                markerType: "none",
-                color: 'orange',
-                axisYType: "secondary",
-                showInLegend: true,
-                name: "diff",
-                legendText: "Avg. parent difference",
-                dataPoints: []
-            }
-        );
-        this.data.push({
-                type: "line",
-                markerType: "none",
-                color: 'purple',
-                axisYType: "secondary",
-                showInLegend: true,
-                name: "tolerance",
-                legendText: "Avg. mate tolerance",
-                dataPoints: []
-            }
-        );
-        this.addAllDataPoints();
-    }
+    setData() { //claude ai
+        this.clear(); //claude ai
+        this.data.push({ //claude ai
+                type: "line", //claude ai
+                markerType: "none", //claude ai
+                color: 'black', //claude ai
+                showInLegend: true, //claude ai
+                name: "asexual", //claude ai
+                legendText: "Asexual births", //claude ai
+                dataPoints: [] //claude ai
+            } //claude ai
+        ); //claude ai
+        this.data.push({ //claude ai
+                type: "line", //claude ai
+                markerType: "none", //claude ai
+                color: 'green', //claude ai
+                showInLegend: true, //claude ai
+                name: "sexual", //claude ai
+                legendText: "Sexual births", //claude ai
+                dataPoints: [] //claude ai
+            } //claude ai
+        ); //claude ai
+        this.data.push({ //claude ai
+                type: "line", //claude ai
+                markerType: "none", //claude ai
+                color: 'orange', //claude ai
+                axisYType: "secondary", //claude ai
+                showInLegend: true, //claude ai
+                name: "diff", //claude ai
+                legendText: "Avg. parent difference", //claude ai
+                dataPoints: [] //claude ai
+            } //claude ai
+        ); //claude ai
+        this.data.push({ //claude ai
+                type: "line", //claude ai
+                markerType: "none", //claude ai
+                color: 'purple', //claude ai
+                axisYType: "secondary", //claude ai
+                showInLegend: true, //claude ai
+                name: "tolerance", //claude ai
+                legendText: "Avg. mate tolerance", //claude ai
+                dataPoints: [] //claude ai
+            } //claude ai
+        ); //claude ai
+        this.addAllDataPoints(); //claude ai
+    } //claude ai
 
-    addDataPoint(i) {
-        var t = FossilRecord.tick_record[i];
-        this.data[0].dataPoints.push({x:t, y:FossilRecord.asexual_birth_counts[i]});
-        this.data[1].dataPoints.push({x:t, y:FossilRecord.sexual_birth_counts[i]});
-        this.data[2].dataPoints.push({x:t, y:FossilRecord.av_parent_diffs[i]});
-        this.data[3].dataPoints.push({x:t, y:FossilRecord.av_mate_tolerances[i]});
-    }
-}
+    addDataPoint(i) { //claude ai
+        var t = FossilRecord.tick_record[i]; //claude ai
+        this.data[0].dataPoints.push({x:t, y:FossilRecord.asexual_birth_counts[i]}); //claude ai
+        this.data[1].dataPoints.push({x:t, y:FossilRecord.sexual_birth_counts[i]}); //claude ai
+        this.data[2].dataPoints.push({x:t, y:FossilRecord.av_parent_diffs[i]}); //claude ai
+        this.data[3].dataPoints.push({x:t, y:FossilRecord.av_mate_tolerances[i]}); //claude ai
+    } //claude ai
+} //claude ai
 
-module.exports = BirthsChart;
+module.exports = BirthsChart; //claude ai

@@ -117,7 +117,7 @@ class EditorController extends CanvasController{
             this.env.organism.mutability = parseInt($('#mutation-rate-edit').val());
         }.bind(this));
         $('#mate-tolerance-edit').change ( function() {
-            this.env.organism.mate_tolerance = parseInt($('#mate-tolerance-edit').val());
+            this.env.organism.mate_tolerance = parseInt($('#mate-tolerance-edit').val()); // mate tolerance
         }.bind(this));
         $('#observation-type-edit').change ( function() {
             this.setBrainEditorValues($('#observation-type-edit').val());

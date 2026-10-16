@@ -288,7 +288,7 @@ class ControlPanel {
         $('#extra-mover-cost').change(function() {
             Hyperparams.extraMoverFoodCost = parseInt($('#extra-mover-cost').val());
         });
-        // a multiplier of 0 would make reproduction free and endless, so fall back to the default
+        // ensure a multiplier of 1
         $('#asexual-cost').change(function() {
             Hyperparams.asexualCostMultiplier = parseFloat($('#asexual-cost').val()) || 1;
         });
@@ -310,7 +310,7 @@ class ControlPanel {
             }
             Hyperparams.useGlobalMutability = !this.checked;
         });
-        $('#evolved-mate-tolerance').change( function() {
+        $('#evolved-mate-tolerance').change( function() { //if theres a bug itr probs herre
             if (this.checked) {
                 $('.global-mate-tolerance-container').css('display', 'none');
                 $('#avg-mate-tolerance').css('display', 'block');
@@ -323,6 +323,9 @@ class ControlPanel {
         });
         $('#global-mate-tolerance').change( function() {
             Hyperparams.globalMateTolerance = parseInt($('#global-mate-tolerance').val());
+        });
+        $('#sex-cell-contact').change( function() {
+            Hyperparams.sexCellContactOnly = this.checked;
         });
         $('#global-mutation').change( function() {
             Hyperparams.globalMutability = parseInt($('#global-mutation').val());
@@ -389,8 +392,9 @@ class ControlPanel {
         $('#insta-kill').prop('checked', Hyperparams.instaKill);
         $('#evolved-mate-tolerance').prop('checked', !Hyperparams.useGlobalMateTolerance);
         $('#global-mate-tolerance').val(Hyperparams.globalMateTolerance);
-        $('.global-mate-tolerance-container').css('display', Hyperparams.useGlobalMateTolerance ? 'block' : 'none');
-        $('#avg-mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block');
+        $('.global-mate-tolerance-container').css('display', Hyperparams.useGlobalMateTolerance ? 'block' : 'none'); //global mate tolerance
+        $('#avg-mate-tolerance').css('display', Hyperparams.useGlobalMateTolerance ? 'none' : 'block'); //evovled mate tolerance
+        $('#sex-cell-contact').prop('checked', Hyperparams.sexCellContactOnly); //sex cell contact
         $('#evolved-mutation').prop('checked', !Hyperparams.useGlobalMutability);
         $('#add-prob').val(Hyperparams.addProb);
         $('#change-prob').val(Hyperparams.changeProb);
@@ -399,8 +403,8 @@ class ControlPanel {
         $('#food-blocks').prop('checked', Hyperparams.foodBlocksReproduction);
         $('#food-drop-rate').val(Hyperparams.foodDropProb);
         $('#extra-mover-cost').val(Hyperparams.extraMoverFoodCost);
-        $('#asexual-cost').val(Hyperparams.asexualCostMultiplier);
-        $('#sexual-cost').val(Hyperparams.sexualCostMultiplier);
+        $('#asexual-cost').val(Hyperparams.asexualCostMultiplier); //asex
+        $('#sexual-cost').val(Hyperparams.sexualCostMultiplier); //sex
         $('#org-limit').val(Hyperparams.maxOrganisms);
         $('#look-range').val(Hyperparams.lookRange);
         $('#see-through-self').prop('checked', Hyperparams.seeThroughSelf);

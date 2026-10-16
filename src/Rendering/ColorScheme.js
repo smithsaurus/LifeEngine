@@ -12,7 +12,7 @@ var color_scheme = {
     "eye":"#B6C1EA",
     "eye-slit": "#0E1318",
     "sex": "#7affd0",
-    "sex-hole": "#ff0000"
+    "sex-hole": "#ff0000" //sorry
 }
 
 // Renderer controls access to a canvas. There is one renderer for each canvas

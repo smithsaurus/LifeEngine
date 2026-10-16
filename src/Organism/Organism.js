@@ -86,7 +86,7 @@ class Organism {
                     org.mutability = 1;
             }
         } 
-        org.mutateMateTolerance();
+        org.mutateMateTolerance(); //mutating mate tol
         var mutated = false;
         if (Math.random() * 100 <= prob) {
             if (org.anatomy.is_mover && Math.random() * 100 <= 10) { 
@@ -106,9 +106,10 @@ class Organism {
 
         this.placeChild(org, mutated);
         Math.max(this.food_collected -= this.asexualFoodNeeded(), 0);
-    }
+    } 
 
-    // tries to drop a child near this organism. new_species: the child's anatomy differs from this organism's
+    // tries to drop a child near this organism
+    // new_species: the child's anatomy differs from this organism's
     placeChild(org, new_species, direction=Directions.getRandomScalar()) {
         var direction_c = direction[0];
         var direction_r = direction[1];
@@ -131,9 +132,11 @@ class Organism {
             else {
                 org.species.addPop();
             }
-            if (org.sexual) {
+            if (org.sexual) { //sexual organisms
                 this.env.sexual_births++;
                 this.env.total_parent_diff += org.parent_diff;
+                if (org.parent_diff == 0)
+                    this.env.inbred_births++;
             }
             else {
                 this.env.asexual_births++;
@@ -143,26 +146,40 @@ class Organism {
         return false;
     }
 
-    // sexual reproduction, triggered when one of this organism's sex cells touches one of partner's.
-    // returns true if a mating happened (food was spent), even if the child had no room to spawn
+    // mates with the first neighbouring organism that has a sex cell, touching the given body cell //boots
+    tryMateAround(cell) {
+        var c = cell.getRealCol();
+        var r = cell.getRealRow();
+        for (var loc of Hyperparams.mateableNeighbors) {
+            var n_cell = this.env.grid_map.cellAt(c+loc[0], r+loc[1]);
+            if (n_cell == null || n_cell.owner == null || n_cell.owner == this || !n_cell.owner.living || !n_cell.owner.anatomy.has_sex)
+                continue; //yersh
+            if (this.mate(n_cell.owner))
+                return true; //yeeesh
+        }
+        return false;
+    }
+
+    // sexual reproduction with partner - started by this organism (see tryMateAround).
+    // returns true if a mating happened
     mate(partner) {
         // the two parents only need the cost between them
         var cost = this.foodNeeded() * Hyperparams.sexualCostMultiplier;
         if (this.food_collected + partner.food_collected <= cost)
             return false;
 
-        // both parents must tolerate how different the other's body is
+        // both parents must tolerate how different the others body is
         var diff = this.anatomyDiff(partner);
         if (Hyperparams.useGlobalMateTolerance) {
-            if (Hyperparams.globalMateTolerance >= 0 && diff > Hyperparams.globalMateTolerance)
+            if (Hyperparams.globalMateTolerance >= 0 && diff > Hyperparams.globalMateTolerance) //boots
                 return false;
         }
         else if (diff > this.mate_tolerance || diff > partner.mate_tolerance) {
             return false;
         }
 
-        // child starts as a copy of this parent (the one whose sex cell initiated).
-        // identical parents have nothing to cross over, so their child is a plain copy
+        // child starts as a copy of this parent
+        // identical parents = child is a copy
         var org = new Organism(0, 0, this.env, this);
         if(Hyperparams.rotationEnabled){
             org.rotation = Directions.getRandomDirection();
@@ -187,6 +204,7 @@ class Organism {
                 continue;
             if (this.calcRandomChance(Hyperparams.crossoverProb) && org.anatomy.removeCell(my_cell.loc_col, my_cell.loc_row))
                 changed = true;
+
         }
 
         org.anatomy.checkTypeChange();
@@ -198,14 +216,14 @@ class Organism {
         org.mutability = (Math.random() < 0.5 ? this : partner).mutability;
         org.mate_tolerance = (Math.random() < 0.5 ? this : partner).mate_tolerance;
         for (var dec in org.brain.decisions) {
-            org.brain.decisions[dec] = (Math.random() < 0.5 ? this : partner).brain.decisions[dec];
+            org.brain.decisions[dec] = (Math.random() < 0.5 ? this : partner).brain.decisions[dec]; 
         }
         org.mutateMateTolerance();
 
-        // try every direction, starting from a random one, until the child fits
+        // try every direction, starting random
         var start = Directions.getRandomDirection();
         for (var i=0; i<4; i++) {
-            if (this.placeChild(org, changed, Directions.scalars[(start+i) % 4]))
+            if (this.placeChild(org, changed, Directions.scalars[(start+i) % 4])) //until the child fits
                 break;
         }
 
@@ -215,7 +233,6 @@ class Organism {
         partner.food_collected -= cost - paid;
         return true;
     }
-
 
     // number of cell positions where this organism's body differs from partner's
     anatomyDiff(partner) {
@@ -232,7 +249,7 @@ class Organism {
         return diff;
     }
 
-    // drifts by one each birth, like mutability
+    // drifts by one each birth
     mutateMateTolerance() {
         if (Hyperparams.useGlobalMateTolerance)
             return;
@@ -411,6 +428,13 @@ class Organism {
             cell.performFunction();
             if (!this.living)
                 return this.living
+        }
+        // Contact anywhere: any of this organism's cells touching another sex-bearing organism can start a mating //claude ai
+        if (!Hyperparams.sexCellContactOnly && this.anatomy.has_sex) {
+            for (var cell of this.anatomy.cells) {
+                if (this.tryMateAround(cell))
+                    break; // One mating per organism per tick
+            }
         }
         
         if (this.anatomy.is_mover) {

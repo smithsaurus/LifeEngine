@@ -25,7 +25,7 @@ class WorldEnvironment extends Environment{
         this.reset_count = 0;
         this.total_ticks = 0;
         this.data_update_rate = 100;
-        this.resetBirthCounts();
+        this.resetBirthCounts(); //poop
         FossilRecord.setEnv(this);
     }
 
@@ -51,6 +51,7 @@ class WorldEnvironment extends Environment{
         this.asexual_births = 0;
         this.sexual_births = 0;
         this.total_parent_diff = 0; // summed over all sexual births
+        this.inbred_births = 0;
     }
 
     render() {
@@ -113,8 +114,8 @@ class WorldEnvironment extends Environment{
         return this.total_mutability / this.organisms.length;
     }
 
-    // averaged over organisms with a sex cell only, since tolerance never affects the others
-    averageMateTolerance() {
+    // averaged over organisms with a sex cell only
+    averageMateTolerance() { //boots
         if (Hyperparams.useGlobalMateTolerance) {
             return Hyperparams.globalMateTolerance;
         }
@@ -128,7 +129,23 @@ class WorldEnvironment extends Environment{
         }
         if (count < 1)
             return 0;
-        return total / count;
+        return total / count; //yeah man
+    }
+
+    // % of living organism that have a sex cell
+    sexCarrierPercent() {
+        var carriers = 0;
+        var count = 0;
+        for (var org of this.organisms) {
+            if (!org.living)
+                continue;
+            count++;
+            if (org.anatomy.has_sex)
+                carriers++;
+        }
+        if (count < 1)
+            return 0;
+        return carriers / count * 100;
     }
 
     changeCell(c, r, state, owner) {

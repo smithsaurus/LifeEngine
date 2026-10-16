@@ -28,11 +28,13 @@ const Hyperparams = {
         this.foodDropProb = 0;
 
         this.extraMoverFoodCost = 0;
-       
-        this.useGlobalMateTolerance = true; //the most cell differences accepted in a mate
-        this.globalMateTolerance = -1; //(-1 means any partner works)
-        this.crossoverProb = 25; // chance a sexual child takes each of the partner's cell differences
-        // reproduction costs this many times foodNeeded()
+
+        this.sexCellContactOnly = true; // mating needs a sex cell to touch the partner; when off, any contact between two [sex-bearing organisms] works // this might be broken
+        // mate tolerance: the most cell differences accepted in a mate
+        this.useGlobalMateTolerance = true;
+        this.globalMateTolerance = -1; //(-1 means any partner works) //boots
+        this.crossoverProb = 25; // chance a sexual child takes each of thepartner's cell differences
+        // reproduction = multiplir * food needed
         this.asexualCostMultiplier = 1;
         this.sexualCostMultiplier = 1;
 

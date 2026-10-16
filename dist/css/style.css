@@ -43,7 +43,7 @@ body{
 }
 
 .control-panel {
-    height: 300px;
+    height: 380px; /* making it more readable */
     width: 100%;
     bottom: 0;
     position: fixed;
@@ -143,6 +143,10 @@ input:hover,input:active {
 
 #tab-container {
     grid-column: 2 / 4;
+    /* stack the tab bar and the open tab, so the tab gets the remaining height and scrolls inside it */
+    display: flex; /* //claude ai */
+    flex-direction: column; /* //claude ai */
+    min-height: 0; /* //claude ai */
 }
 
 .tabnav {
@@ -178,7 +182,8 @@ input:hover,input:active {
     display: none;
     padding: 10px;
     overflow-y: auto;
-    height: 100%;
+    flex: 1; /* claude ai */
+    min-height: 0; /* claude ai */
 }
 
 .tab#about {

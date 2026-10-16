@@ -2,11 +2,12 @@ const PopulationChart = require("./Charts/PopulationChart");
 const SpeciesChart = require("./Charts/SpeciesChart");
 const MutationChart = require("./Charts/MutationChart");
 const CellsChart = require("./Charts/CellsChart");
-const BirthsChart = require("./Charts/BirthsChart");
+const BirthsChart = require("./Charts/BirthsChart"); //claude ai
+const SexualReproductionChart = require("./Charts/SexualReproductionChart"); //claude ai
 const FossilRecord = require("./FossilRecord");
 
 
-const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart, BirthsChart];
+const ChartSelections = [PopulationChart, SpeciesChart, CellsChart, MutationChart, BirthsChart, SexualReproductionChart]; //claude ai
 
 class StatsPanel {
     constructor(env) {
@@ -59,11 +60,11 @@ class StatsPanel {
             $('#top-species').text("Most Populous Species: None");
         $('#largest-org').text("Largest Organism Ever: " + this.env.largest_cell_count + " cells");
         $('#avg-mut').text("Average Mutation Rate: " + Math.round(this.env.averageMutability() * 100) / 100);
-        var sexual = this.env.sexual_births;
-        var births = sexual + this.env.asexual_births;
-        $('#birth-counts').text("Births: " + this.env.asexual_births + " asexual, " + sexual + " sexual (" + (births > 0 ? Math.round(sexual / births * 100) : 0) + "% sexual)");
-        $('#avg-mate-tolerance').text("Average Mate Tolerance: " + Math.round(this.env.averageMateTolerance() * 100) / 100 + " cells");
-        $('#avg-parent-diff').text("Average Parent Difference: " + (sexual > 0 ? Math.round(this.env.total_parent_diff / sexual * 100) / 100 : 0) + " cells");
+        var sexual = this.env.sexual_births; //claude ai
+        var births = sexual + this.env.asexual_births; //claude ai
+        $('#birth-counts').text("Births: " + this.env.asexual_births + " asexual, " + sexual + " sexual (" + (births > 0 ? Math.round(sexual / births * 100) : 0) + "% sexual)"); //claude ai
+        $('#avg-mate-tolerance').text("Average Mate Tolerance: " + Math.round(this.env.averageMateTolerance() * 100) / 100 + " cells"); //claude ai
+        $('#avg-parent-diff').text("Average Parent Difference: " + (sexual > 0 ? Math.round(this.env.total_parent_diff / sexual * 100) / 100 : 0) + " cells"); //claude ai
     }
 
     reset() {
